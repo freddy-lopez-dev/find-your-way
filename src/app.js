@@ -1,4 +1,8 @@
+var userLongitude = '';
+var userLatitude = '';
+
 navigator.geolocation.getCurrentPosition(success, error, options);
+
 
 var options = {
   enableHighAccuracy: true,
@@ -7,16 +11,14 @@ var options = {
 };
 
 function success(pos) {
-  var userLongitude = pos.coords.longitude;
-  var userLatitude = pos.coords.latitude;
-  console.log(userLatitude, userLongitude);
+  userLongitude = pos.coords.longitude;
+  userLatitude = pos.coords.latitude;
   displayMap(userLatitude, userLongitude);
 }
 
 function error(err) {
   alert(`ERROR(${err.code}): ${err.message}`);
 }
-
 
 function displayMap(lat, long) {
   mapboxgl.accessToken = 'pk.eyJ1IjoiZnJlZGR5LW1hcGJveCIsImEiOiJjbDJveXprZG4xbTA2M2NteGY4OXNnNTJ6In0.-IBL7wFEXMI17Q3PLkw98Q';
@@ -31,3 +33,17 @@ function displayMap(lat, long) {
     .setLngLat([long, lat])
     .addTo(map);
 }
+
+const getPOI = async (search, lat, long) => {
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${search}.json?proximity=${long}%2C${lat}&types=poi&access_token=pk.eyJ1IjoiZnJlZGR5LW1hcGJveCIsImEiOiJjbDJveXprZG4xbTA2M2NteGY4OXNnNTJ6In0.-IBL7wFEXMI17Q3PLkw98Q`
+  const request = await fetch(url);
+  const response = await request.json();
+  return response.features
+}
+
+document.querySelector('form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const search = document.querySelector('input').value
+  getPOI(search, userLatitude, userLongitude)
+  .then(data => console.log(data))
+});
