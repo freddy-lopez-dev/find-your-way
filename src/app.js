@@ -9,12 +9,21 @@ var options = {
 function success(pos) {
   var crd = pos.coords;
 
-  console.log('Your current position is:');
-  console.log(`Latitude : ${crd.latitude}`);
-  console.log(`Longitude: ${crd.longitude}`);
-  console.log(`More or less ${crd.accuracy} meters.`);
+  mapboxgl.accessToken = 'pk.eyJ1IjoiZnJlZGR5LW1hcGJveCIsImEiOiJjbDJveXprZG4xbTA2M2NteGY4OXNnNTJ6In0.-IBL7wFEXMI17Q3PLkw98Q';
+  const map = new mapboxgl.Map({
+    container: 'map', // container ID
+    style: 'mapbox://styles/mapbox/streets-v11', // style URL
+    center: [crd.longitude, crd.latitude], // starting position [lng, lat]
+    zoom: 9 // starting zoom
+  });
+
+  const marker1 = new mapboxgl.Marker()
+    .setLngLat([crd.longitude, crd.latitude])
+    .addTo(map);
 }
 
 function error(err) {
   console.warn(`ERROR(${err.code}): ${err.message}`);
 }
+
+
