@@ -7,23 +7,27 @@ var options = {
 };
 
 function success(pos) {
-  var crd = pos.coords;
+  var userLongitude = pos.coords.longitude;
+  var userLatitude = pos.coords.latitude;
+  console.log(userLatitude, userLongitude);
+  displayMap(userLatitude, userLongitude);
+}
 
+function error(err) {
+  alert(`ERROR(${err.code}): ${err.message}`);
+}
+
+
+function displayMap(lat, long) {
   mapboxgl.accessToken = 'pk.eyJ1IjoiZnJlZGR5LW1hcGJveCIsImEiOiJjbDJveXprZG4xbTA2M2NteGY4OXNnNTJ6In0.-IBL7wFEXMI17Q3PLkw98Q';
   const map = new mapboxgl.Map({
     container: 'map', // container ID
     style: 'mapbox://styles/mapbox/streets-v11', // style URL
-    center: [crd.longitude, crd.latitude], // starting position [lng, lat]
-    zoom: 9 // starting zoom
+    center: [long, lat], // starting position [lng, lat]
+    zoom: 15 // starting zoom
   });
 
-  const marker1 = new mapboxgl.Marker()
-    .setLngLat([crd.longitude, crd.latitude])
+  const marker2 = new mapboxgl.Marker({ color: 'black', rotation: 45 })
+    .setLngLat([long, lat])
     .addTo(map);
 }
-
-function error(err) {
-  console.warn(`ERROR(${err.code}): ${err.message}`);
-}
-
-
