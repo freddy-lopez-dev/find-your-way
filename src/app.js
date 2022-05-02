@@ -34,16 +34,39 @@ function displayMap(lat, long) {
     .addTo(map);
 }
 
-const getPOI = async (search, lat, long) => {
+async function getPOI(search, lat, long) {
   const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${search}.json?proximity=${long}%2C${lat}&types=poi&access_token=pk.eyJ1IjoiZnJlZGR5LW1hcGJveCIsImEiOiJjbDJveXprZG4xbTA2M2NteGY4OXNnNTJ6In0.-IBL7wFEXMI17Q3PLkw98Q`
   const request = await fetch(url);
   const response = await request.json();
   return response.features
 }
 
+function generatePOI(data) {
+  const POIEl = document.querySelector('.points-of-interest');
+  POIEl.textContent = '';
+
+  data.forEach(data => {
+    POIEl.insertAdjacentHTML(
+      'beforeend',
+      `
+      <li class="poi" data-long="-97.083698" data-lat="49.823371">
+        <ul>
+          <li class="name">${data.text}
+          </li>
+          <li class="street-address">${data.place_name}
+          </li>
+          <li class="distance">2.0 KM
+          </li>
+        </ul>
+      </li>
+      `
+    )
+  })
+}
+
 document.querySelector('form').addEventListener('submit', (e) => {
   e.preventDefault();
   const search = document.querySelector('input').value
   getPOI(search, userLatitude, userLongitude)
-  .then(data => console.log(data))
+    .then(data => generatePOI(data))
 });
