@@ -1,0 +1,11 @@
+{
+  "name": "freddy-find-your-way",
+  "source": "src/index.html",
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build"
+  },
+  "devDependencies": {
+    "parcel": "latest"
+  }
+}
