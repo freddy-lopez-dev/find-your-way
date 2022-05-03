@@ -49,7 +49,7 @@ function generatePOI(data) {
     POIEl.insertAdjacentHTML(
       'beforeend',
       `
-      <li class="poi" data-long="-97.083698" data-lat="49.823371">
+      <li class="poi" data-long="${data.center[0]}" data-lat="${data.center[1]}">
         <ul>
           <li class="name">${data.text}
           </li>
@@ -70,3 +70,9 @@ document.querySelector('form').addEventListener('submit', (e) => {
   getPOI(search, userLatitude, userLongitude)
     .then(data => generatePOI(data))
 });
+
+document.querySelector('.points-of-interest').addEventListener('click', (e) => {
+  const poiLong = e.target.closest('.poi').dataset.long
+  const poiLat = e.target.closest('.poi').dataset.lat
+  displayMap(poiLat, poiLong)
+})
