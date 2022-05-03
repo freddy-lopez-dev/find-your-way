@@ -1,19 +1,28 @@
 var userLongitude = '';
 var userLatitude = '';
 
-navigator.geolocation.getCurrentPosition(success, error, options);
+navigator.geolocation.getCurrentPosition(success, error);
 
-
-var options = {
-  enableHighAccuracy: true,
-  timeout: 5000,
-  maximumAge: 0
-};
+mapboxgl.accessToken = 'pk.eyJ1IjoiZnJlZGR5LW1hcGJveCIsImEiOiJjbDJveXprZG4xbTA2M2NteGY4OXNnNTJ6In0.-IBL7wFEXMI17Q3PLkw98Q';
+let map = new mapboxgl.Map({
+  container: 'map', // container ID
+  style: 'mapbox://styles/mapbox/streets-v11', // style URL
+  center: [userLongitude, userLatitude], // starting position [lng, lat]
+  zoom: 15 // starting zoom
+});
+const marker2 = new mapboxgl.Marker({ color: 'black', rotation: 45 })
 
 function success(pos) {
   userLongitude = pos.coords.longitude;
   userLatitude = pos.coords.latitude;
-  displayMap(userLatitude, userLongitude);
+  
+  map = new mapboxgl.Map({
+    container: 'map', // container ID
+    style: 'mapbox://styles/mapbox/streets-v11', // style URL
+    center: [userLongitude, userLatitude], // starting position [lng, lat]
+    zoom: 15 // starting zoom
+  });
+  marker2.setLngLat([userLongitude, userLatitude]).addTo(map);
 }
 
 function error(err) {
@@ -29,7 +38,7 @@ function displayMap(lat, long) {
     zoom: 15 // starting zoom
   });
 
-  const marker2 = new mapboxgl.Marker({ color: 'black', rotation: 45 })
+  marker2
     .setLngLat([long, lat])
     .addTo(map);
 }
@@ -87,17 +96,35 @@ function calcDistanceBetweenGeoPts(lat1, lon1, lat2 = userLatitude, lon2 = userL
   }
 }
 
-document.querySelector('form').addEventListener('submit', (e) => {
+function flyToLoc(lat, long) {
+  marker2.remove();
+  map.flyTo({
+    center: [long, lat],
+    options: {
+      maxDuration: 1300,
+    }
+  })
+  marker2.setLngLat([long, lat]).addTo(map);
+}
+
+function clickHandler(e) {
+  // remove the existing marker
+  // flyto the new map center
+  // place a marker with the new coords
+  const poiLong = e.target.closest('.poi').dataset.long
+  const poiLat = e.target.closest('.poi').dataset.lat
+  flyToLoc(poiLat, poiLong)
+}
+
+function submitHandler(e) {
   e.preventDefault();
   const search = document.querySelector('input').value
   getPOI(search, userLatitude, userLongitude)
     .then(data => generatePOI(data))
-});
+}
 
-document.querySelector('.points-of-interest').addEventListener('click', (e) => {
-  const poiLong = e.target.closest('.poi').dataset.long
-  const poiLat = e.target.closest('.poi').dataset.lat
-  displayMap(poiLat, poiLong)
-})
+document.querySelector('form').addEventListener('submit', submitHandler);
+
+document.querySelector('.points-of-interest').addEventListener('click', clickHandler);
 
 //Navigation - matrix on mapbox for driving distance or walking distance
